@@ -1,6 +1,12 @@
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import React from "react";
-import { SafeAreaView, Text, View } from "react-native";
+import React, { useEffect } from "react";
+import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { Button } from "../components/Button";
 import { Figure } from "../components/Figure";
 import { StaggeredTitleAnimation } from "../components/StaggeredTitle";
@@ -13,6 +19,29 @@ interface HomeScreenProps {
 const DEFAULT_DELAY = 200;
 
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
+  const buttonOpacity = useSharedValue(0);
+  const buttonTranslateY = useSharedValue(100);
+
+  const buttonAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: buttonOpacity.value,
+      transform: [{ translateY: buttonTranslateY.value }],
+    };
+  });
+
+  useEffect(() => {
+    setTimeout(() => {
+      buttonOpacity.value = withTiming(1, {
+        duration: 1000,
+        easing: Easing.out(Easing.exp),
+      });
+      buttonTranslateY.value = withTiming(0, {
+        duration: 1000,
+        easing: Easing.out(Easing.exp),
+      });
+    }, 1800);
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View
@@ -32,22 +61,32 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
 
         <Figure />
 
-        <Button
-          iconName={"arrow-right"}
-          onPress={() => navigation.navigate("Products")}
-          label="Go to store"
-        />
-        <View
-          style={{
-            marginTop: "auto",
-            width: "100%",
-          }}
-        >
+        <Animated.View style={[styles.buttonContainer, buttonAnimatedStyle]}>
+          <Button
+            floated={false}
+            iconName={"arrow-right"}
+            onPress={() => navigation.navigate("Products")}
+            label="Go to store"
+          />
+        </Animated.View>
+
+        <View style={styles.textContainer}>
           <Text style={{ textAlign: "center" }}>Created by dma</Text>
         </View>
       </View>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    marginTop: "auto",
+  },
+
+  textContainer: {
+    marginTop: "auto",
+    width: "100%",
+  },
+});
 
 export default HomeScreen;

@@ -12,10 +12,9 @@ import Animated, {
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 const MAX_TRANSLATE_Y = -SCREEN_HEIGHT + 50;
-
-type BottomSheetProps = {
+interface BottomSheetProps {
   children?: React.ReactNode;
-};
+}
 
 export type BottomSheetRefProps = {
   scrollTo: (destination: number) => void;
