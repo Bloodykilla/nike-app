@@ -1,15 +1,23 @@
 import { Feather } from "@expo/vector-icons";
 import { Image, StyleSheet, Text, View } from "react-native";
-import cart from "../data/cart";
+import { useDispatch } from "react-redux";
+import { changeQuantity } from "../store/cart/cart-slice";
+import { OrderTypes } from "../types/Order";
 
 interface CartListItemProps {
-  cartItem: (typeof cart)[0];
+  cartItem: OrderTypes;
 }
 
 export const CartListItem = ({ cartItem }: CartListItemProps) => {
-  const increaseQuantity = () => {};
+  const dispatch = useDispatch();
 
-  const decreaseQuantity = () => {};
+  const increaseQuantity = () => {
+    dispatch(changeQuantity({ productId: cartItem.product.id, amount: 1 }));
+  };
+
+  const decreaseQuantity = () => {
+    dispatch(changeQuantity({ productId: cartItem.product.id, amount: -1 }));
+  };
 
   return (
     <View style={styles.container}>
@@ -20,19 +28,19 @@ export const CartListItem = ({ cartItem }: CartListItemProps) => {
 
         <View style={styles.footer}>
           <Feather
-            onPress={increaseQuantity}
+            onPress={decreaseQuantity}
             name="minus-circle"
             size={24}
-            color="gray"
+            color="black"
           />
           <Text style={styles.quantity}>{cartItem.quantity}</Text>
           <Feather
-            onPress={decreaseQuantity}
+            onPress={increaseQuantity}
             name="plus-circle"
             size={24}
-            color="gray"
+            color="black"
           />
-          <Text style={styles.itemTotal}>$320.0</Text>
+          <Text style={styles.itemTotal}>{cartItem.product.price} $</Text>
         </View>
       </View>
     </View>
@@ -44,6 +52,7 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingHorizontal: 20,
     flexDirection: "row",
+    borderBottomWidth: 1,
   },
   contentContainer: {
     flex: 1,
@@ -55,16 +64,17 @@ const styles = StyleSheet.create({
   },
   name: {
     fontWeight: "500",
-    fontSize: 18,
+    fontSize: 22,
+    marginBottom: 4,
   },
   size: {
-    fontSize: 16,
+    fontSize: 14,
     color: "gray",
   },
   quantity: {
     marginHorizontal: 10,
     fontWeight: "bold",
-    color: "gray",
+    color: "black",
   },
   footer: {
     marginTop: "auto",

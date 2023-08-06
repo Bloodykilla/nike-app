@@ -1,20 +1,53 @@
+import { FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 interface ButtonProps {
   label: string;
   onPress: () => void;
   floated?: boolean;
+  iconName?: string;
+  isOutline?: boolean;
+  style?: {};
 }
 
-export const Button = ({ label, onPress, floated = true }: ButtonProps) => {
+export const Button = ({
+  label,
+  onPress,
+  floated = true,
+  iconName,
+  isOutline,
+  style,
+}: ButtonProps) => {
   return (
-    <Pressable
-      style={[styles.button, floated && styles.float]}
+    <TouchableOpacity
+      style={[
+        styles.button,
+        floated && styles.float,
+        isOutline && styles.outline,
+        style,
+      ]}
       onPress={onPress}
     >
-      <Text style={styles.buttonText}>{label}</Text>
-    </Pressable>
+      <Text
+        style={[
+          styles.buttonText,
+          {
+            color: isOutline ? "#000" : "#fff",
+          },
+        ]}
+      >
+        {label}
+      </Text>
+      {iconName && (
+        <FontAwesome5
+          style={{ marginLeft: 8 }}
+          name={iconName}
+          size={16}
+          color={isOutline ? "black" : "white"}
+        />
+      )}
+    </TouchableOpacity>
   );
 };
 
@@ -24,7 +57,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#000",
     width: "90%",
     alignSelf: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
+  },
+
+  outline: {
+    borderWidth: 1,
+    backgroundColor: "transparent",
   },
 
   float: {
@@ -32,9 +73,7 @@ const styles = StyleSheet.create({
     bottom: 45,
   },
   buttonText: {
-    color: "#fff",
     textAlign: "center",
-
     fontSize: 16,
     fontWeight: "500",
   },

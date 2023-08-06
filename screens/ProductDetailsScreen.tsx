@@ -1,4 +1,5 @@
-import React from "react";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import React, { useState } from "react";
 import {
   FlatList,
   Image,
@@ -8,17 +9,51 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { Button } from "../components/Button";
-import products from "../data/products";
+import { Size } from "../components/Size";
+import { addCartItem } from "../store/cart/cart-slice";
+import { NavigationTypes } from "../types/Navigation";
+import { ProductTypes } from "../types/Product";
+import { StateTypes } from "../types/State";
 
-interface ProductDetailsScreenProps {}
+interface ProductDetailsScreenProps {
+  navigation: NativeStackNavigationProp<NavigationTypes>;
+}
 
-const ProductDetailsScreen = ({}: ProductDetailsScreenProps) => {
-  const product = products[0];
+const ProductDetailsScreen = ({ navigation }: ProductDetailsScreenProps) => {
+  const [warning, setWarning] = useState<string>("");
+  const [selectedSize, setSelectedSize] = useState<number | null>(null);
+  const product: ProductTypes = useSelector(
+    (state: StateTypes) => state.products.selectedProduct
+  );
+
+  const dispatch = useDispatch();
   const { width } = useWindowDimensions();
 
+  const selectSizeHandler = (value: number) => {
+    setWarning("");
+
+    if (selectedSize !== value) {
+      setSelectedSize(value);
+    } else {
+      setSelectedSize(null);
+    }
+  };
+
+  const mock = {
+    product: product,
+    size: selectedSize,
+  };
+
   const addToCartHandler = () => {
-    console.log("Hi!");
+    if (!selectedSize) {
+      setWarning("Please, select the size of shoes.");
+      return;
+    }
+
+    dispatch(addCartItem(mock));
+    navigation.goBack();
   };
 
   return (
@@ -49,8 +84,24 @@ const ProductDetailsScreen = ({}: ProductDetailsScreenProps) => {
             padding: 20,
           }}
         >
-          <Text style={styles.title}>{product.name}</Text>
-          <Text style={styles.price}>{product.price}</Text>
+          {product.name && <Text style={styles.title}>{product.name}</Text>}
+          {product.price && <Text style={styles.price}>{product.price} $</Text>}
+          {product.sizes && product.sizes.length && (
+            <>
+              <Text style={styles.sizes}>Available Sizes:</Text>
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                {product.sizes.map((size) => (
+                  <Size
+                    key={size}
+                    value={size}
+                    isActive={selectedSize === size ? true : false}
+                    onPress={() => selectSizeHandler(size)}
+                  />
+                ))}
+              </View>
+            </>
+          )}
+          {warning && <Text style={styles.warningText}>{warning}</Text>}
           <Text style={styles.description}>{product.description}</Text>
         </View>
       </ScrollView>
@@ -70,11 +121,22 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 16,
   },
+  sizes: {
+    marginVertical: 10,
+    fontWeight: "500",
+    fontSize: 16,
+  },
   description: {
     marginVertical: 10,
     fontSize: 18,
     lineHeight: 30,
     fontWeight: "300",
+  },
+  warningText: {
+    fontWeight: "400",
+    color: "red",
+    fontSize: 16,
+    marginTop: 10,
   },
 });
 
