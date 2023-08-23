@@ -1,6 +1,6 @@
   # Nike shoes store app
 
-This app was created using React Native, Expo, Typescript, Redux Toolkit, and Reanimated.
+This app was created using React Native, Expo, Typescript, Redux Toolkit and Reanimated.
 
 <img width="500" alt="Screenshot 2023-08-07 at 16 57 32" src="https://github.com/Bloodykilla/nike-app/assets/50729504/4e75c1d4-cef8-4c7b-8965-1cc83889a44e">
 
